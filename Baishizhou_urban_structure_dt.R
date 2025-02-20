@@ -56,7 +56,7 @@ install.packages("/Applications/rua2333/EverythingAbtPhD/PhD2.0/Research/Researc
 library(terra)
 install.packages("tmap", dependencies=TRUE)
 library(tmap)
-tmap_mode("plot")
+tmap_mode("view")
 tm_shape(stations_within_1.5km) +
   tm_bubbles(size = 0.3, col = "red") +
   tm_shape(BSZ_DL_crs) +
@@ -89,13 +89,18 @@ nearby_stations_df <- nearby_stations %>%
 print(nearby_stations_df)
 
 
-# Calculate distances (straight-line)
-village_matrix <- matrix(c(village$lon, village$lat), ncol = 2)
-distances <- distHaversine(village_matrix, station_df)
+# Calculate the ratio of 建筑高度/街道宽度
+options(osmdata_base_url = "https://nominatim.openstreetmap.de")
+target_area <- opq(bbox = "白石洲村") %>%
+  add_osm_feature(key = "building") %>%
+  osmdata_sf()
+buildings <- opq("Baishizhoudong") %>%
+  add_osm_feature(key = "building") %>%
+  osmdata_sf() %>%
+  .$osm_polygons
 
-# Find the nearest station
-nearest_station_index <- which.min(distances)
-nearest_station_distance <- distances[nearest_station_index]
 
-# Print result
-print(paste("Nearest station is", nearest_station_distance, "meters away"))
+
+
+
+
